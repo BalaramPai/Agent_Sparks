@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17
+    container_name: sparks-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: sparks
+      POSTGRES_USER: sparks
+      POSTGRES_PASSWORD: sparks
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - sparks_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  sparks_postgres_data:
