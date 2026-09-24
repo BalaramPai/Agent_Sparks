@@ -8,6 +8,7 @@ from sparks.persistence.repositories.observation import ObservationRepository
 from sparks.persistence.repositories.session import SessionRepository
 from sparks.persistence.repositories.task import TaskRepository
 from sparks.persistence.repositories.task_step import TaskStepRepository
+from sparks.persistence.repositories.tool_execution import ToolExecutionRepository
 from sparks.persistence.repositories.user import UserRepository
 
 __all__ = [
@@ -21,5 +22,6 @@ __all__ = [
     "SessionRepository",
     "TaskRepository",
     "TaskStepRepository",
+    "ToolExecutionRepository",
     "UserRepository",
 ]

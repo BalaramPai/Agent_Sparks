@@ -7,6 +7,7 @@ from sparks.persistence.services.observation import ObservationService
 from sparks.persistence.services.session import SessionService
 from sparks.persistence.services.task import TaskService
 from sparks.persistence.services.task_step import TaskStepService
+from sparks.persistence.services.tool_execution import ToolExecutionService
 from sparks.persistence.services.user import UserService
 
 __all__ = [
@@ -19,5 +20,6 @@ __all__ = [
     "SessionService",
     "TaskService",
     "TaskStepService",
+    "ToolExecutionService",
     "UserService",
 ]

@@ -8,6 +8,7 @@ from sparks.persistence.models.observation import Observation
 from sparks.persistence.models.session import Session
 from sparks.persistence.models.task import Task, TaskStatus
 from sparks.persistence.models.task_step import TaskStep, TaskStepStatus
+from sparks.persistence.models.tool_execution import ToolExecution
 from sparks.persistence.models.user import User
 
 __all__ = [
@@ -24,5 +25,6 @@ __all__ = [
     "TaskStatus",
     "TaskStep",
     "TaskStepStatus",
+    "ToolExecution",
     "User",
 ]
