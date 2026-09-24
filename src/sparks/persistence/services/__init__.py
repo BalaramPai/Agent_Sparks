@@ -1,3 +1,4 @@
+from sparks.persistence.services.agent_run import AgentRunService
 from sparks.persistence.services.context_snapshot import ContextSnapshotService
 from sparks.persistence.services.conversation import ConversationService
 from sparks.persistence.services.memory import MemoryService
@@ -8,6 +9,7 @@ from sparks.persistence.services.task_step import TaskStepService
 from sparks.persistence.services.user import UserService
 
 __all__ = [
+    "AgentRunService",
     "ContextSnapshotService",
     "ConversationService",
     "MemoryService",

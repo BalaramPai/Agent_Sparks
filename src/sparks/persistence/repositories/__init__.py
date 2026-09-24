@@ -1,3 +1,4 @@
+from sparks.persistence.repositories.agent_run import AgentRunRepository
 from sparks.persistence.repositories.context_snapshot import ContextSnapshotRepository
 from sparks.persistence.repositories.conversation import ConversationRepository
 from sparks.persistence.repositories.memory import MemoryRepository
@@ -9,6 +10,7 @@ from sparks.persistence.repositories.task_step import TaskStepRepository
 from sparks.persistence.repositories.user import UserRepository
 
 __all__ = [
+    "AgentRunRepository",
     "ContextSnapshotRepository",
     "ConversationRepository",
     "MemoryRepository",

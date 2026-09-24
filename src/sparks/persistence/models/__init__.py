@@ -1,3 +1,4 @@
+from sparks.persistence.models.agent_run import AgentRun, AgentRunStatus
 from sparks.persistence.models.context_snapshot import ContextSnapshot
 from sparks.persistence.models.conversation import Conversation
 from sparks.persistence.models.memory import Memory
@@ -9,6 +10,8 @@ from sparks.persistence.models.task_step import TaskStep, TaskStepStatus
 from sparks.persistence.models.user import User
 
 __all__ = [
+    "AgentRun",
+    "AgentRunStatus",
     "ContextSnapshot",
     "Conversation",
     "Memory",
