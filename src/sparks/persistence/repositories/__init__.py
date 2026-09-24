@@ -10,6 +10,7 @@ from sparks.persistence.repositories.task import TaskRepository
 from sparks.persistence.repositories.task_step import TaskStepRepository
 from sparks.persistence.repositories.tool_execution import ToolExecutionRepository
 from sparks.persistence.repositories.user import UserRepository
+from sparks.persistence.repositories.workflow import WorkflowRepository
 
 __all__ = [
     "AgentMessageRepository",
@@ -24,4 +25,5 @@ __all__ = [
     "TaskStepRepository",
     "ToolExecutionRepository",
     "UserRepository",
+    "WorkflowRepository",
 ]

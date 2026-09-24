@@ -10,6 +10,7 @@ from sparks.persistence.models.task import Task, TaskStatus
 from sparks.persistence.models.task_step import TaskStep, TaskStepStatus
 from sparks.persistence.models.tool_execution import ToolExecution
 from sparks.persistence.models.user import User
+from sparks.persistence.models.workflow import Workflow
 
 __all__ = [
     "AgentMessage",
@@ -27,4 +28,5 @@ __all__ = [
     "TaskStepStatus",
     "ToolExecution",
     "User",
+    "Workflow",
 ]
