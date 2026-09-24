@@ -8,6 +8,7 @@ from sparks.persistence.database import Base
 
 if TYPE_CHECKING:
     from sparks.persistence.models.message import Message
+    from sparks.persistence.models.session import Session
     from sparks.persistence.models.user import User
 
 
@@ -41,6 +42,16 @@ class Conversation(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
+    )
+    
+    session: Mapped["Session | None"] = relationship(
+        back_populates="conversations",
+    )
+    
+    session_id: Mapped[int | None] = mapped_column(
+        ForeignKey("sessions.id", ondelete="SET NULL"),
+        nullable=True,
+        index=True,
     )
 
     user: Mapped["User"] = relationship(

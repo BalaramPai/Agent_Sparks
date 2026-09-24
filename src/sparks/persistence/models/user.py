@@ -8,6 +8,8 @@ from sparks.persistence.database import Base
 
 if TYPE_CHECKING:
     from sparks.persistence.models.conversation import Conversation
+    from sparks.persistence.models.memory import Memory
+    from sparks.persistence.models.session import Session
 
 
 class User(Base):
@@ -39,6 +41,18 @@ class User(Base):
     )
 
     conversations: Mapped[list["Conversation"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+
+    memories: Mapped[list["Memory"]] = relationship(
+        back_populates="user",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
+    
+    sessions: Mapped[list["Session"]] = relationship(
         back_populates="user",
         cascade="all, delete-orphan",
         passive_deletes=True,

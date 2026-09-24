@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from sparks.config.settings import get_settings
 from sparks.persistence.database import Base
-from sparks.persistence.models import Conversation, Message, User
+from sparks.persistence.models import Conversation, Memory, Message, Observation, Session, User
 
 
 config = context.config
