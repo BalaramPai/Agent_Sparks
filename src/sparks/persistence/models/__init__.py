@@ -4,13 +4,16 @@ from sparks.persistence.models.context_snapshot import ContextSnapshot
 from sparks.persistence.models.conversation import Conversation
 from sparks.persistence.models.memory import Memory
 from sparks.persistence.models.message import Message
+from sparks.persistence.models.model_run import ModelRun
 from sparks.persistence.models.observation import Observation
+from sparks.persistence.models.performance_metric import PerformanceMetric
 from sparks.persistence.models.session import Session
 from sparks.persistence.models.task import Task, TaskStatus
 from sparks.persistence.models.task_step import TaskStep, TaskStepStatus
 from sparks.persistence.models.tool_execution import ToolExecution
 from sparks.persistence.models.user import User
 from sparks.persistence.models.workflow import Workflow
+from sparks.persistence.models.workflow_run import WorkflowRun, WorkflowRunStatus
 
 __all__ = [
     "AgentMessage",
@@ -20,7 +23,9 @@ __all__ = [
     "Conversation",
     "Memory",
     "Message",
+    "ModelRun",
     "Observation",
+    "PerformanceMetric",
     "Session",
     "Task",
     "TaskStatus",
@@ -29,4 +34,7 @@ __all__ = [
     "ToolExecution",
     "User",
     "Workflow",
+    "WorkflowRun",
+    "WorkflowRunStatus",
 ]
+

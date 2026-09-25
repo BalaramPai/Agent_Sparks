@@ -5,7 +5,7 @@ from sqlalchemy import engine_from_config, pool
 
 from sparks.config.settings import get_settings
 from sparks.persistence.database import Base
-from sparks.persistence.models import AgentMessage, AgentRun, ContextSnapshot, Conversation, Memory, Message, Observation, Session, Task, TaskStep, ToolExecution, User, Workflow
+from sparks.persistence.models import AgentMessage, AgentRun, ContextSnapshot, Conversation, Memory, Message, ModelRun, Observation, PerformanceMetric, Session, Task, TaskStep, ToolExecution, User, Workflow, WorkflowRun
 
 
 config = context.config
