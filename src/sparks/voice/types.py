@@ -5,10 +5,6 @@ from typing import Any
 
 
 class VoiceState(str, Enum):
-    """
-    Runtime state of the SPARKS voice interaction pipeline.
-    """
-
     IDLE = "idle"
     LISTENING = "listening"
     DETECTING_SPEECH = "detecting_speech"
@@ -20,10 +16,6 @@ class VoiceState(str, Enum):
 
 
 class VoiceEventType(str, Enum):
-    """
-    Events emitted by the voice subsystem.
-    """
-
     LISTENING_STARTED = "voice.listening_started"
     SPEECH_STARTED = "voice.speech_started"
     SPEECH_STOPPED = "voice.speech_stopped"
@@ -33,6 +25,7 @@ class VoiceEventType(str, Enum):
     TRANSCRIPTION_COMPLETED = "voice.transcription_completed"
 
     PROCESSING_STARTED = "voice.processing_started"
+    ACTION_COMPLETED = "voice.action_completed"
 
     SPEAKING_STARTED = "voice.speaking_started"
     SPEAKING_STOPPED = "voice.speaking_stopped"
@@ -43,13 +36,6 @@ class VoiceEventType(str, Enum):
 
 @dataclass(frozen=True)
 class VoiceEvent:
-    """
-    Immutable event emitted by the voice subsystem.
-
-    Events contain derived interaction state only.
-    Raw microphone/audio buffers must not be persisted here.
-    """
-
     event_type: VoiceEventType
     timestamp: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)

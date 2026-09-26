@@ -1,9 +1,7 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
-import re
-
-from sparks.tools.types import ToolContext, ToolResult
 from sparks.tools.registry import ToolRegistry
+from sparks.tools.types import ToolContext, ToolResult
 
 
 class DeterministicActionExecutor:
@@ -15,15 +13,35 @@ class DeterministicActionExecutor:
         text: str,
         context: ToolContext | None = None,
     ) -> ToolResult | None:
-        normalized = text.strip().lower()
+        normalized = text.strip()
 
-        if re.search(
-            r"\b(open|launch|start)\b.*\b(chrome|google chrome)\b",
-            normalized,
-        ):
-            return self.registry.execute(
-                "open_chrome",
-                context=context,
+        if not normalized:
+            return None
+
+        matches = [
+            tool
+            for tool in self.registry.tools()
+            if tool.can_handle(normalized)
+        ]
+
+        if not matches:
+            return None
+
+        if len(matches) > 1:
+            return ToolResult(
+                success=False,
+                tool_name="deterministic_resolver",
+                message="Multiple tools matched the request.",
+                error="ambiguous_tool_match",
+                data={
+                    "matches": [tool.name for tool in matches],
+                },
             )
 
-        return None
+        tool = matches[0]
+
+        return self.registry.execute(
+            tool.name,
+            arguments={"text": normalized},
+            context=context,
+        )

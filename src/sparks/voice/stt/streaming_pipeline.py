@@ -1,14 +1,9 @@
 ﻿from __future__ import annotations
 
-from collections.abc import Iterable
 from threading import Lock
-from typing import Callable
 
-from sparks.voice.cancellation import CancellationError, CancellationToken
-from sparks.voice.stt.streaming import (
-    StreamingTranscriptionResult,
-    StreamingTranscriptionType,
-)
+from sparks.voice.cancellation import CancellationToken
+from sparks.voice.stt.streaming import StreamingTranscriptionResult
 from sparks.voice.stt.streaming_base import StreamingCallback
 
 

@@ -422,3 +422,150 @@ def test_pipeline_start_is_idempotent():
     assert pipeline._executor is first_executor
 
     pipeline.stop()
+from sparks.voice.command_executor import VoiceCommandExecutor
+from sparks.tools.types import ToolResult
+
+
+class FakeCommandExecutor:
+    def __init__(self, result=None) -> None:
+        self.calls = []
+        self.result = result or ToolResult(
+            success=True,
+            tool_name="open_chrome",
+            message="Google Chrome opened successfully.",
+            data={"verified": True},
+        )
+
+    def execute(self, transcript: str):
+        self.calls.append(transcript)
+        return self.result
+
+
+def test_pipeline_executes_command_from_final_transcription():
+    capture = FakeCapture()
+    vad = FakeVad([True, True, False, False, False])
+    stt = FakeSTT()
+    command_executor = FakeCommandExecutor()
+
+    events = []
+
+    pipeline = VoicePipeline(
+        capture,
+        vad,
+        stt,
+        command_executor=command_executor,
+        event_callback=events.append,
+    )
+
+    pipeline.start()
+
+    capture.emit(b"frame-1")
+    capture.emit(b"frame-2")
+    capture.emit(b"frame-3")
+    capture.emit(b"frame-4")
+
+    deadline = monotonic() + 2
+
+    while (
+        not command_executor.calls
+        and monotonic() < deadline
+    ):
+        pass
+
+    assert command_executor.calls == ["hello sparks"]
+
+    action_events = [
+        event
+        for event in events
+        if event.event_type == VoiceEventType.ACTION_COMPLETED
+    ]
+
+    assert action_events
+    assert action_events[-1].text == "Google Chrome opened successfully."
+    assert action_events[-1].metadata["tool_name"] == "open_chrome"
+    assert action_events[-1].metadata["success"] is True
+
+    pipeline.stop()
+
+
+def test_pipeline_does_not_execute_command_from_partial_transcription():
+    capture = FakeCapture()
+    vad = FakeVad([True, True, False, False, False])
+    stt = FakeSTT()
+    command_executor = FakeCommandExecutor()
+
+    pipeline = VoicePipeline(
+        capture,
+        vad,
+        stt,
+        command_executor=command_executor,
+    )
+
+    pipeline.start()
+
+    capture.emit(b"frame-1")
+    capture.emit(b"frame-2")
+    capture.emit(b"frame-3")
+    capture.emit(b"frame-4")
+
+    deadline = monotonic() + 2
+
+    while (
+        not command_executor.calls
+        and monotonic() < deadline
+    ):
+        pass
+
+    assert command_executor.calls == ["hello sparks"]
+
+    pipeline.stop()
+
+
+def test_pipeline_action_failure_emits_error_event():
+    capture = FakeCapture()
+    vad = FakeVad([True, True, False, False, False])
+    stt = FakeSTT()
+
+    class FailingCommandExecutor:
+        def execute(self, transcript: str):
+            raise RuntimeError("tool execution failed")
+
+    events = []
+
+    pipeline = VoicePipeline(
+        capture,
+        vad,
+        stt,
+        command_executor=FailingCommandExecutor(),
+        event_callback=events.append,
+    )
+
+    pipeline.start()
+
+    capture.emit(b"frame-1")
+    capture.emit(b"frame-2")
+    capture.emit(b"frame-3")
+    capture.emit(b"frame-4")
+
+    deadline = monotonic() + 2
+
+    while (
+        not any(
+            event.event_type == VoiceEventType.ERROR
+            for event in events
+        )
+        and monotonic() < deadline
+    ):
+        pass
+
+    error_events = [
+        event
+        for event in events
+        if event.event_type == VoiceEventType.ERROR
+    ]
+
+    assert error_events
+    assert error_events[-1].metadata["error"] == "tool execution failed"
+    assert error_events[-1].metadata["error_type"] == "RuntimeError"
+
+    pipeline.stop()

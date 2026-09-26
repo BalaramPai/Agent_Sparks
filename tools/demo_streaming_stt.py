@@ -42,7 +42,7 @@ def main() -> None:
 
     capture = SoundDeviceCapture(config=config)
 
-    stt.start()
+    stt.start(on_result)
 
     try:
         capture.start(stt.push_audio)
@@ -61,7 +61,7 @@ def main() -> None:
             pass
 
         if stt.is_active:
-            stt.finish(on_result)
+            stt.finish()
 
     print()
     print("=" * 70)

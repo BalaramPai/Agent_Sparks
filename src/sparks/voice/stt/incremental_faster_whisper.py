@@ -72,7 +72,7 @@ class IncrementalFasterWhisperSTT:
         with self._lock:
             return self._running
 
-    def start(self) -> None:
+    def start(self, callback=None) -> None:
         if self.is_active:
             return
 
@@ -85,7 +85,7 @@ class IncrementalFasterWhisperSTT:
             self._last_partial = ""
             self._running = True
 
-        self._callback = None
+        self._callback = callback
         self._wake_event.clear()
 
         self._worker = threading.Thread(
@@ -107,11 +107,12 @@ class IncrementalFasterWhisperSTT:
 
         self._wake_event.set()
 
-    def finish(self, callback) -> None:
+    def finish(self, callback=None) -> None:
         if not self.is_active:
             raise RuntimeError("streaming STT is not active")
 
-        self._callback = callback
+        if callback is not None:
+            self._callback = callback
 
         # Tell the background worker to stop.
         with self._lock:

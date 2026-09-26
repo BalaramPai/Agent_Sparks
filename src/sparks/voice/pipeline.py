@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
 from threading import Lock
@@ -6,6 +6,7 @@ from typing import Callable
 
 from sparks.voice.cancellation import CancellationError, CancellationToken
 from sparks.voice.capture.base import AudioCapture, AudioCaptureConfig
+from sparks.voice.command_executor import VoiceCommandExecutor
 from sparks.voice.interruption import (
     InterruptionController,
     InterruptionReason,
@@ -31,7 +32,8 @@ class VoicePipeline:
     1. Existing utterance-level SpeechToText fallback.
     2. Optional incremental streaming STT.
 
-    Streaming mode remains provider-independent.
+    Final transcriptions can optionally be forwarded to the
+    existing SPARKS command runtime.
     """
 
     def __init__(
@@ -41,6 +43,7 @@ class VoicePipeline:
         stt: SpeechToText,
         *,
         streaming_stt=None,
+        command_executor: VoiceCommandExecutor | None = None,
         capture_config: AudioCaptureConfig | None = None,
         activation_gate: VoiceActivationGate | None = None,
         pre_roll_frames: int = 3,
@@ -53,6 +56,7 @@ class VoicePipeline:
         self.vad = vad
         self.stt = stt
         self.streaming_stt = streaming_stt
+        self.command_executor = command_executor
 
         self.capture_config = (
             capture_config or AudioCaptureConfig()
@@ -268,8 +272,6 @@ class VoicePipeline:
                     source="vad",
                 )
 
-            # While an active streaming transcription is running,
-            # every incoming frame is forwarded immediately.
             if (
                 self._streaming_active
                 and self._state == VoiceState.TRANSCRIBING
@@ -511,6 +513,12 @@ class VoicePipeline:
                     )
                 )
 
+                if (
+                    result.result_type
+                    == StreamingTranscriptionType.FINAL
+                ):
+                    self._dispatch_command(result.text)
+
             streaming_stt.finish(handle_result)
 
             self._finish_streaming_state(token)
@@ -523,6 +531,59 @@ class VoicePipeline:
                 self._streaming_active = False
 
             raise
+
+    def _dispatch_command(self, transcript: str) -> None:
+        if self.command_executor is None:
+            return
+
+        text = transcript.strip()
+
+        if not text:
+            return
+
+        executor = self._executor
+
+        if executor is None:
+            return
+
+        executor.submit(
+            self._execute_command,
+            text,
+        )
+
+    def _execute_command(self, transcript: str) -> None:
+        try:
+            result = self.command_executor.execute(transcript)
+
+            if result is None:
+                return
+
+            self._emit(
+                VoiceEvent(
+                    event_type=VoiceEventType.ACTION_COMPLETED,
+                    state=VoiceState.LISTENING,
+                    text=result.message,
+                    metadata={
+                        "tool_name": result.tool_name,
+                        "success": result.success,
+                        "tool_data": result.data,
+                        "tool_error": result.error,
+                    },
+                )
+            )
+
+        except Exception as exc:
+            self._emit(
+                VoiceEvent(
+                    event_type=VoiceEventType.ERROR,
+                    state=VoiceState.ERROR,
+                    metadata={
+                        "error": str(exc),
+                        "error_type": type(exc).__name__,
+                        "source": "command_executor",
+                    },
+                )
+            )
 
     def _finish_streaming_state(
         self,
@@ -599,6 +660,9 @@ class VoicePipeline:
                         confidence=result.confidence,
                     )
                 )
+
+                if result.result_type == TranscriptionType.FINAL:
+                    self._dispatch_command(result.text)
 
             self.stt.transcribe(
                 audio_chunks,
