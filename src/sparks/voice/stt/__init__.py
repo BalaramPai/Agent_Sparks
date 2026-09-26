@@ -1,23 +1,22 @@
-"""
-SPARKS Speech-to-Text subsystem.
-"""
-
-from sparks.voice.stt.accumulator import TranscriptionAccumulator
-from sparks.voice.stt.base import (
-    SpeechToText,
-    TranscriptionCallback,
+﻿from .accumulator import TranscriptionAccumulator
+from .base import SpeechToText
+from .buffered_streaming import BufferedStreamingSTT
+from .faster_whisper import FasterWhisperSTT
+from .incremental_faster_whisper import IncrementalFasterWhisperSTT
+from .streaming import (
+    StreamingTranscriptionResult,
+    StreamingTranscriptionType,
 )
-from sparks.voice.stt.faster_whisper import FasterWhisperSTT
-from sparks.voice.stt.types import (
-    TranscriptionResult,
-    TranscriptionType,
-)
+from .streaming_base import StreamingCallback, StreamingSpeechToText
 
 __all__ = [
-    "FasterWhisperSTT",
     "SpeechToText",
     "TranscriptionAccumulator",
-    "TranscriptionCallback",
-    "TranscriptionResult",
-    "TranscriptionType",
+    "FasterWhisperSTT",
+    "BufferedStreamingSTT",
+    "IncrementalFasterWhisperSTT",
+    "StreamingSpeechToText",
+    "StreamingCallback",
+    "StreamingTranscriptionResult",
+    "StreamingTranscriptionType",
 ]
